@@ -29,28 +29,39 @@ public class UserRepository : IUserRepository
                                                                               && c.Password == password);
     }
 
-    public async Task<User?> GetFromCacheAsync(UserId userId)
+    public async Task<bool> ExistsByUserNameAsync(string userName)
     {
-        var key = $"user-{userId.Value}";
-        string? cachedUser = await _distributedCache.GetStringAsync(key);
-
-        if (!string.IsNullOrEmpty(cachedUser))
-        {
-            return JsonConvert.DeserializeObject<User>(cachedUser);
-        }
-
-        var user = await GetAsync(userId);
-        if (user is not null)
-        {
-            var cacheOptions = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            };
-            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(user), cacheOptions);
-        }
-
-        return user;
+        return await _dbContext.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());
     }
+
+    public async Task<User> AddAsync(User user, CancellationToken cancellationToken = default)
+    {
+        var entry = await _dbContext.Users.AddAsync(user, cancellationToken);
+        return entry.Entity;
+    }
+
+    //public async Task<User?> GetFromCacheAsync(UserId userId)
+    //{
+    //    var key = $"user-{userId.Value}";
+    //    string? cachedUser = await _distributedCache.GetStringAsync(key);
+
+    //    if (!string.IsNullOrEmpty(cachedUser))
+    //    {
+    //        return JsonConvert.DeserializeObject<User>(cachedUser);
+    //    }
+
+    //    var user = await GetAsync(userId);
+    //    if (user is not null)
+    //    {
+    //        var cacheOptions = new DistributedCacheEntryOptions
+    //        {
+    //            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+    //        };
+    //        await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(user), cacheOptions);
+    //    }
+
+    //    return user;
+    //}
 
     public User Update(User user)
     {

@@ -3,11 +3,6 @@ using Domain.Entites;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Configurations;
 
@@ -16,6 +11,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(x => x.Id);
+
+        
+        builder.Property(x => x.Id)
+            .HasConversion(id => id.Value, v => new UserId(v))
+            .ValueGeneratedNever()
+            .HasColumnType("uuid");
 
         builder.Property(x => x.FirstName)
             .HasMaxLength(UserConsts.NameMaxLength)

@@ -11,10 +11,10 @@ namespace Domain.Entites
 {
     public class User : BaseEntity<UserId>
     {
-        // Parameterless constructor required by EF Core (calls base with default id; will be overridden when seeding or saving)
+       
         public User() : base(default) { }
 
-        // Explicit constructor to enforce setting required properties
+      
         public User(UserId id, string firstName, string lastName, string userName, Email email, string password) : base(id)
         {
             FirstName = firstName;
