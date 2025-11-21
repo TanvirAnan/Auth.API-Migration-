@@ -1,13 +1,13 @@
-Auth.API – .NET 8 CQRS + MediatR + JWT Authentication Sample
-Overview
+🚀 Auth.API – .NET 8 CQRS + MediatR + JWT Authentication Sample
+📌 Overview
 
-Layered (Clean) architecture: Domain, Application, Infrastructure, API, BuildingBlocks
+Layered (Clean) Architecture: Domain, Application, Infrastructure, API, BuildingBlocks
 
-Implements CQRS with MediatR (commands/queries + pipeline behaviors)
+CQRS with MediatR (Commands, Queries, Pipeline Behaviors)
 
 PostgreSQL (EF Core) with automatic migrations
 
-JWT authentication + global authorization fallback (all endpoints require auth unless [AllowAnonymous])
+JWT Authentication with global authorization fallback
 
 Value Objects: UserId, Email
 
@@ -15,26 +15,26 @@ Validation: FluentValidation
 
 Caching: In-memory distributed placeholder
 
-Solution Structure
-Domain
+📂 Solution Structure
+🧩 Domain
 
-Entities (User)
+Entities: User
 
-Value Objects (UserId, Email)
+Value Objects: UserId, Email
 
 Interfaces
 
-Application
+⚙️ Application
 
-Commands (CreateUser, UpdateUser)
+Commands: CreateUser, UpdateUser
 
-Queries (Login)
+Queries: Login
 
-Validators, Handlers
+Validators & Handlers
 
 Pipeline Behaviors
 
-Infrastructure
+🗄️ Infrastructure
 
 EF Core DbContext
 
@@ -44,7 +44,7 @@ Repository Implementations
 
 Migrations
 
-Auth.API
+🌐 Auth.API
 
 ASP.NET Core entrypoint
 
@@ -52,9 +52,9 @@ Dependency Injection wiring
 
 JWT configuration
 
-Controllers (Register, Login, UpdateUser)
+Controllers: Register, Login, UpdateUser
 
-BuildingBlocks
+🧱 BuildingBlocks
 
 CQRS abstractions
 
@@ -62,7 +62,7 @@ Common exception types
 
 Pipeline behaviors
 
-Key Packages
+📦 Key Packages
 
 MediatR
 
@@ -74,7 +74,7 @@ Microsoft.AspNetCore.Authentication.JwtBearer
 
 System.IdentityModel.Tokens.Jwt
 
-Configuration (appsettings.json)
+🛠️ Configuration (appsettings.json)
 {
   "ConnectionStrings": {
     "Database": "",
@@ -89,41 +89,49 @@ Configuration (appsettings.json)
 }
 
 
-Note: Use a strong key in User Secrets or environment variables for production.
+🔐 Important: Store JwtSettings.Key in User Secrets or environment variables in production.
 
-Database & Migrations
-# Add migration
+🗄️ Database & Migrations
+Add Migration
 dotnet ef migrations add InitialCreate \
   -p Infrastructure/Infrastructure.csproj \
   -s Auth.API/Auth.API/Auth.API.csproj
 
-# Update database
+Update Database
 dotnet ef database update \
   -p Infrastructure/Infrastructure.csproj \
   -s Auth.API/Auth.API/Auth.API.csproj
 
 
-Automatic migration also runs at startup.
+⚙️ Automatic migrations also run at startup.
 
-Authentication Flow
+🔐 Authentication Flow
+1️⃣ Register User
 
-Register user
-POST /api/Register (anonymous)
+POST /api/Register (Anonymous)
 
-Login
-POST /api/Login → returns { user, token }
+2️⃣ Login
 
-Use JWT token
+POST /api/Login
+Returns:
+
+{
+  "user": { ... },
+  "token": "eyJ..."
+}
+
+3️⃣ Use JWT Token
+
 Add header:
 
 Authorization: Bearer <token>
 
 
-Protected endpoints require a valid JWT (enforced by fallback policy).
+🔒 Protected endpoints require a valid JWT via fallback policy.
 
-JWT Claims
+🔑 JWT Claims
 
-sub: username
+sub — username
 
 email
 
@@ -131,11 +139,8 @@ uid
 
 jti
 
-Controllers / Endpoints
+🧩 Controllers / Endpoints
 POST /api/Register
-
-Body:
-
 {
   "firstName": "",
   "lastName": "",
@@ -145,9 +150,6 @@ Body:
 }
 
 POST /api/Login
-
-Body:
-
 {
   "userName": "",
   "password": ""
@@ -155,11 +157,8 @@ Body:
 
 PUT /api/UpdateUser
 
-Requires Authentication
-
-Uses sub claim (username) to enforce self-update only
-
-Body:
+🔐 Requires Authentication
+Uses sub claim (username) to enforce self-update only.
 
 {
   "firstName": "",
@@ -169,28 +168,29 @@ Body:
   "password": "current password"
 }
 
-User Entity
+👤 User Entity
 
-Id (value object UserId mapped to UUID)
+Id (value object UserId, UUID)
 
 FirstName, LastName
 
 UserName
 
-Email (value object + EF conversion)
+Email (value object with EF conversion)
 
-Password (currently plaintext, needs hashing → PBKDF2/Argon2 recommended)
+Password
 
-CQRS Pipeline Behaviors
+❗ Stored plaintext → MUST be hashed (PBKDF2, Argon2)
 
-ValidationBehavior → runs FluentValidation before executing handlers
+⚡ CQRS Pipeline Behaviors
 
-LoggingBehavior → logs start/end and execution time
+ValidationBehavior — Runs FluentValidation
 
-Error Handling
+LoggingBehavior — Logs execution start/end + duration
 
-Custom exception handler returns ProblemDetails with traceId
+❗ Error Handling
 
+Returns ProblemDetails with traceId
 Throws:
 
 NotFoundException
@@ -199,9 +199,8 @@ BadRequestException
 
 ValidationException
 
-Example Login Request / Response
+📥 Example Login Request / Response
 Request
-POST /api/Login
 {
   "userName": "alice",
   "password": "Alice@2025"
@@ -213,22 +212,26 @@ Response
   "token": "eyJ..."
 }
 
-Security Notes
+🔒 Security Notes
 
-Passwords are stored plaintext → MUST be hashed (PBKDF2, Argon2)
+Passwords MUST be hashed (PBKDF2/Argon2)
 
-JWT key should be rotated & secured (User Secrets / Key Vault)
+JWT key should be rotated & stored securely
 
-Consider:
+Consider adding:
 
 Refresh tokens
 
-Role-based or policy-based authorization
+Role/claim-based authorization
 
-Swagger Usage
+Rate limiting
+
+📘 Swagger Usage
+
+Open Swagger
 
 Click Authorize
 
-Paste token (no Bearer prefix needed)
+Paste JWT token (⚠️ no Bearer prefix)
 
-Call protected endpoints
+Call secured endpoints
