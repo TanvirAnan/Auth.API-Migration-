@@ -86,6 +86,7 @@ A modern, clean, and scalable authentication microservice built using **.NET 8**
   }
 }
 🗄️ Database & Migrations
+
 Add Migration
 dotnet ef migrations add InitialCreate \
   -p Infrastructure/Infrastructure.csproj \
