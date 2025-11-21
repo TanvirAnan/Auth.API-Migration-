@@ -225,7 +225,7 @@ Authorization: Bearer <your-token>
 2. Update `appsettings.json` with your connection strings
 3. Run migrations: `dotnet ef database update`
 4. Run the API: `dotnet run --project Auth.API`
-5. Navigate to `https://localhost:5001/swagger`
+5. Navigate to `https://localhost:5274`
 
 ---
 
