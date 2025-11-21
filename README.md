@@ -85,26 +85,27 @@ A modern, clean, and scalable authentication microservice built using **.NET 8**
     "ExpiresMinutes": 60
   }
 }
-🗄️ Database & Migrations
+## 🗄️ Database & Migrations
 
-Add Migration
+### Add Migration
+```bash
 dotnet ef migrations add InitialCreate \
   -p Infrastructure/Infrastructure.csproj \
   -s Auth.API/Auth.API.csproj
-
 Update Database
+bash
+Copy code
 dotnet ef database update \
   -p Infrastructure/Infrastructure.csproj \
   -s Auth.API/Auth.API.csproj
-
-
 Automatic migrations also run on startup (development only).
 
 🔐 Authentication Flow
 1️⃣ Register
-
 POST /api/Register
 
+json
+Copy code
 {
   "firstName": "",
   "lastName": "",
@@ -112,32 +113,30 @@ POST /api/Register
   "email": "",
   "password": ""
 }
-
 2️⃣ Login
-
 POST /api/Login
 
+json
+Copy code
 {
   "userName": "alice",
   "password": "Alice@2025"
 }
-
-
 Response:
 
+json
+Copy code
 {
   "user": { ... },
   "token": "eyJ..."
 }
-
 3️⃣ Access Protected Endpoints
-
 Include JWT in headers:
 
+http
+Copy code
 Authorization: Bearer <your-token>
-
 🔑 JWT Claims
-
 sub — Username
 
 email — User email
@@ -147,13 +146,14 @@ uid — User ID
 jti — Unique Token ID
 
 🧩 Controllers / Endpoints
-
 POST /api/Register (Anonymous) → create user
 
 POST /api/Login (Anonymous) → authenticate user
 
 PUT /api/UpdateUser (Requires Auth) → self-update only
 
+json
+Copy code
 {
   "firstName": "",
   "lastName": "",
@@ -161,9 +161,7 @@ PUT /api/UpdateUser (Requires Auth) → self-update only
   "email": "",
   "password": "current-password"
 }
-
 👤 User Entity
-
 Id (Value Object → UUID)
 
 FirstName, LastName
@@ -175,18 +173,15 @@ Email (Value Object + EF conversion)
 Password ⚠️ plaintext → must hash in production (PBKDF2/Argon2)
 
 ⚡ CQRS Pipeline Behaviors
-
 ValidationBehavior → FluentValidation
 
 LoggingBehavior → Logs start/end time
 
 ❗ Error Handling
-
 Global exception handler returns ProblemDetails with traceId.
 Handled exceptions: NotFoundException, BadRequestException, ValidationException
 
 📘 Using Swagger (OpenAPI)
-
 Open Swagger UI
 
 Click Authorize
